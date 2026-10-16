@@ -4,35 +4,82 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CV Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#ffffff">
 <style>
-:root{--ink:#1b2430;--mut:#5b6673;--line:#d9dee4;--acc:#1f5f5b;--bg:#eef1f3}
+:root{--ink:#151a26;--mut:#5d667a;--line:#d9deea;--acc:#2b44d6;--acc2:#2237b5;--desk:#dde2ec;--soft:#f4f6fa;--hl:#ffe680;
+--fd:"Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif;--fb:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 *{box-sizing:border-box}
-body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
-.bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line)}
-.bar b{font-size:15px;margin-right:6px}
-.bar .sp{flex:1}
-button,select{font:inherit;padding:6px 11px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);cursor:pointer}
-button:hover{border-color:var(--acc)}
+html{color-scheme:light}
+body{margin:0;font:14px/1.5 var(--fb);color:var(--ink);background:var(--desk);-webkit-font-smoothing:antialiased}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;height:60px;padding:0 18px;background:#fff;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px;margin-right:12px;font:700 18px/1 var(--fd);letter-spacing:-.01em;white-space:nowrap}
+.brand svg{flex:none}
+.grow{flex:1}
+button,select,summary.btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 13px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:500 13.5px/1 var(--fb);cursor:pointer;transition:background .15s,border-color .15s}
+button:hover,summary.btn:hover{background:var(--soft);border-color:#c3cadb}
 button.p{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
-button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
-.app{display:grid;grid-template-columns:minmax(330px,420px) 1fr}
-.ed,.pv{height:calc(100vh - 56px);overflow:auto;padding:14px}
-.ed{background:#fff;border-right:1px solid var(--line)}
-.ed>details{border-bottom:1px solid var(--line);padding:6px 0}
-.ed summary{cursor:pointer;font-weight:600;padding:6px 0}
-label{display:block;margin:8px 0 0;font-size:12px;color:var(--mut)}
-input[type=text],input:not([type]),textarea{display:block;width:100%;margin-top:3px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;font:13px/1.4 inherit;color:var(--ink);background:#fff}
+button.p:hover{background:var(--acc2);border-color:var(--acc2)}
+button svg,summary.btn svg{flex:none}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+select{appearance:none;-webkit-appearance:none;min-width:190px;max-width:260px;padding-right:34px;font-weight:600;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%235d667a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center}
+
+/* dropdown menus */
+.menu{position:relative}
+.menu>summary{list-style:none}
+.menu>summary::-webkit-details-marker{display:none}
+.menu[open]>summary{background:var(--soft);border-color:#c3cadb}
+.pop{position:absolute;right:0;top:calc(100% + 6px);z-index:30;display:flex;flex-direction:column;gap:1px;min-width:190px;padding:5px;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:0 16px 36px -12px rgba(21,26,70,.32)}
+.pop button{justify-content:flex-start;width:100%;height:34px;border:0;border-radius:7px;background:transparent}
+.pop button:hover{background:var(--soft)}
+.pop button.danger{color:#b3261e}
+.pop hr{margin:4px 2px;border:0;border-top:1px solid var(--line)}
+
+/* layout */
+.app{display:grid;grid-template-columns:minmax(340px,430px) 1fr;height:calc(100vh - 60px);height:calc(100dvh - 60px)}
+.ed,.pv{min-height:0;overflow:auto}
+.ed{padding:0 0 40px;background:#fff;border-right:1px solid var(--line)}
+.pv{padding:22px 28px 60px}
+
+/* editor sections */
+.ed>details{border-bottom:1px solid var(--line)}
+.ed>details>summary{display:flex;align-items:center;gap:10px;padding:14px 20px;font:600 14.5px/1.2 var(--fd);list-style:none;cursor:pointer;user-select:none}
+.ed>details>summary::-webkit-details-marker{display:none}
+.ed>details>summary::before{content:"";flex:none;width:7px;height:7px;margin:0 3px 0 2px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(-45deg);transition:transform .18s}
+.ed>details[open]>summary::before{transform:rotate(45deg)}
+.ed>details>summary:hover{background:var(--soft)}
+.ed>details[open]>summary{color:var(--acc);box-shadow:inset 3px 0 0 var(--acc)}
+.ed>details>summary .n{margin-left:auto;font:500 12px/1 var(--fb);color:var(--mut)}
+.ed>details>:not(summary){margin-left:20px;margin-right:20px}
+.ed>details[open]{padding-bottom:16px}
+label{display:block;margin:12px 0 0;font:500 12.5px/1.3 var(--fb);color:var(--mut)}
+input[type=text],input:not([type]),textarea{display:block;width:100%;margin-top:5px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:400 13.5px/1.45 var(--fb);transition:border-color .15s,box-shadow .15s}
 textarea{resize:vertical}
-.ih{display:flex;gap:8px;align-items:flex-start;margin:4px 0;padding:4px 0;border-top:1px dashed var(--line)}
-.ih>input{margin-top:9px}
+input[type=text]:focus,input:not([type]):focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(43,68,214,.16);outline:none}
+.hint{margin:8px 0 2px;font-size:12.5px;color:var(--mut)}
+
+/* items with on/off switch */
+.ih{display:flex;align-items:flex-start;gap:11px;margin:4px 0;padding:2px 0;border-top:1px solid var(--line)}
+.ih>input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:none;width:32px;height:19px;margin:11px 0 0;border-radius:10px;background-color:#c4cbda;background-image:radial-gradient(circle,#fff 6.5px,transparent 7px);background-size:15px 15px;background-repeat:no-repeat;background-position:2px center;cursor:pointer;transition:background-color .15s,background-position .15s}
+.ih>input[type=checkbox]:checked{background-color:var(--acc);background-position:calc(100% - 2px) center}
+.ih>input[type=checkbox]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .ih>details{flex:1;min-width:0}
-.ih summary{font-weight:500;padding:5px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row{display:flex;gap:6px;margin:10px 0 4px}
-.row button{padding:4px 9px;font-size:12px}
-.add{margin:6px 0}
-.hint{font-size:12px;color:var(--mut);margin:6px 0 0}
-.tabs{display:flex;gap:6px;margin-bottom:12px}
-.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ih summary{position:relative;display:block;padding:9px 24px 9px 0;font-weight:500;list-style:none;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ih summary::-webkit-details-marker{display:none}
+.ih summary::after{content:"";position:absolute;right:5px;top:50%;width:7px;height:7px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:translateY(-70%) rotate(45deg);transition:transform .18s}
+.ih details[open]>summary::after{transform:translateY(-30%) rotate(225deg)}
+.ih>input[type=checkbox]:not(:checked)+details>summary{color:var(--mut);opacity:.75}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 8px}
+.row button{height:30px;padding:0 10px;border-radius:8px;font-size:12.5px}
+.row button[data-a^="rm"]{margin-left:auto;border-color:#efc9c6;color:#b3261e}
+.row button[data-a^="rm"]:hover{background:#fdf0ef}
+.add{justify-content:center;width:calc(100% - 40px);height:36px;margin-top:12px;border-style:dashed;color:var(--acc);font-weight:600}
+.add::before{content:"+";font-size:17px;line-height:1}
+
 .paper{max-width:794px;margin:0 auto;background:#fff;padding:42px 48px;box-shadow:0 2px 12px rgba(0,0,0,.12);font:13px/1.4 Arial,Helvetica,sans-serif;color:#000;min-height:600px}
 .paper h1{font-size:24px;margin:0 0 2px}
 .paper .t{font-size:14px;font-weight:bold;margin:0 0 3px}
@@ -59,16 +106,48 @@ textarea{resize:vertical}
 .pg td{padding:0;border:0;vertical-align:top}
 .sp{height:0}
 mark{background:#fff3a3;color:inherit;padding:0 2px;border-radius:2px}
-.warn{background:#fff8d6;border:1px solid #e6d27a;border-radius:6px;padding:8px 12px;margin-bottom:14px;font-size:13px}
-.chip{display:inline-block;margin:0 5px 6px 0;padding:3px 9px;border-radius:12px;font-size:12px;border:1px solid}
-.ok{background:#e6f3ec;border-color:#9fcdb2;color:#14502d}
-.no{background:#fbeaea;border-color:#e2a3a3;color:#7a1c1c}
-.score{font-size:30px;font-weight:bold}
-@media(max-width:900px){.app{display:block}.ed,.pv{height:auto}.paper{padding:22px 18px}}
+.warn{margin:0 0 14px;padding:10px 14px;background:#fff6c9;border:1px solid #ecd76e;border-left:4px solid #e0b800;border-radius:9px;font-size:13px;color:#4a3d00}
+.chip{display:inline-block;margin:0 6px 7px 0;padding:4px 11px;border:1px solid;border-radius:999px;font-size:12.5px;font-weight:500}
+.ok{background:#e4f5ec;border-color:#a8d9bd;color:#13522f}
+.no{background:#fff1b8;border-color:#ebd262;color:#574400}
+
+/* preview header */
+.tabs{display:flex;flex-wrap:wrap;align-items:center;gap:14px;max-width:794px;margin:0 auto 16px}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:11px;background:#cbd3e1}
+.seg button{height:32px;padding:0 15px;border:0;border-radius:8px;background:transparent;color:#38415a}
+.seg button:hover{background:rgba(255,255,255,.55)}
+.seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(21,26,70,.2)}
+.st{display:flex;align-items:center;gap:7px;margin-left:auto;font-size:12.5px;color:#4a5368}
+.st i{width:7px;height:7px;border-radius:50%;background:#2e9b63}
+.st.flash i{animation:pulse .7s}
+@keyframes pulse{from{box-shadow:0 0 0 0 rgba(46,155,99,.55)}to{box-shadow:0 0 0 8px rgba(46,155,99,0)}}
+
+@media screen{
+.paper{min-height:1123px;border-radius:3px;box-shadow:0 0 0 1px rgba(21,26,70,.06),0 2px 4px rgba(21,26,70,.07),0 26px 50px -18px rgba(21,26,70,.32)}
+.paper.kw{min-height:0;padding:30px 34px 34px;border-radius:16px;background:#fff;color:var(--ink);font:14px/1.55 var(--fb)}
+.paper.kw h2{margin:26px 0 10px;padding:0;border:0;font:700 17px/1.25 var(--fd);letter-spacing:0;text-transform:none}
+.paper.kw h2:first-child{margin-top:0;font-size:22px}
+.paper.kw p{margin:0 0 8px}
+.sc{display:flex;align-items:center;gap:18px}
+.score{flex:none;display:grid;place-items:center;width:84px;height:84px;border-radius:50%;font:700 22px/1 var(--fd);background:radial-gradient(closest-side,#fff 76%,transparent 78% 100%),conic-gradient(var(--acc) calc(var(--p)*1%),#e3e7f1 0)}
+}
+@media(max-width:900px){
+.bar{position:static;flex-wrap:wrap;height:auto;padding:10px 14px}
+.brand{width:100%;margin:0}
+.grow{display:none}
+.app{display:block;height:auto}
+.ed{border-right:0;border-bottom:1px solid var(--line)}
+.ed,.pv{overflow:visible}
+.pv{padding:16px 12px 40px}
+.paper{min-height:0;padding:22px 18px}
+.paper.kw{padding:22px 18px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
 @page{size:A4;margin:0}
 @media print{
 body{background:#fff}.bar,.ed,.tabs,.warn{display:none!important}
-.app{display:block}.pv{height:auto;overflow:visible;padding:0}
+.app{display:block;height:auto}.pv{height:auto;overflow:visible;padding:0}
 .paper{box-shadow:none;max-width:none;padding:0 15mm;min-height:0;font-size:10pt}
 .paper.kw{display:none}
 .sp{height:14mm}
@@ -79,27 +158,42 @@ mark{background:none;padding:0}
 </style>
 </head>
 <body>
-<div class="bar">
-  <b>CV Builder</b>
+<header class="bar">
+  <div class="brand">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#2b44d6"/><rect x="7" y="7" width="14" height="3" rx="1.5" fill="#fff"/><rect x="6" y="12.3" width="16" height="3.8" rx="1.2" fill="#ffe680"/><rect x="7" y="18.2" width="9" height="3" rx="1.5" fill="#fff" opacity=".85"/></svg>
+    CV Builder
+  </div>
   <select id="ver" aria-label="Saved version"></select>
-  <button data-g="new">Save as new version</button>
-  <button data-g="blank">New blank CV</button>
-  <button data-g="ren">Rename</button>
-  <button data-g="del">Delete</button>
-  <span class="sp"></span>
-  <button data-g="exp">Backup</button>
-  <button data-g="imp">Restore</button>
+  <button data-g="new"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>Save as new version</button>
+  <details class="menu">
+    <summary class="btn" aria-label="More version actions"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="3" cy="8" r="1.4" fill="currentColor"/><circle cx="8" cy="8" r="1.4" fill="currentColor"/><circle cx="13" cy="8" r="1.4" fill="currentColor"/></svg>More</summary>
+    <div class="pop">
+      <button data-g="blank">New blank CV</button>
+      <button data-g="ren">Rename</button>
+      <hr>
+      <button data-g="del" class="danger">Delete</button>
+    </div>
+  </details>
+  <span class="grow"></span>
+  <details class="menu">
+    <summary class="btn">Backup and restore</summary>
+    <div class="pop">
+      <button data-g="exp">Backup</button>
+      <button data-g="imp">Restore</button>
+    </div>
+  </details>
   <input type="file" id="file" accept=".json" hidden>
-  <button class="p" data-g="print">Print / Save as PDF</button>
-</div>
+  <button class="p" data-g="print"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 6V2h7v4M4.5 11.5h-2v-5h11v5h-2M4.5 9.5h7v4.5h-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg>Print / Save as PDF</button>
+</header>
 <div class="app">
   <div class="ed" id="ed"></div>
-  <div class="pv">
+  <main class="pv">
     <div class="tabs">
-      <button data-t="cv">CV</button><button data-t="cl">Cover letter</button><button data-t="kw">Keyword match</button>
+      <div class="seg"><button data-t="cv">CV</button><button data-t="cl">Cover letter</button><button data-t="kw">Keyword match</button></div>
+      <span class="st" id="st" role="status"><i></i><span>Saved in this browser</span></span>
     </div>
     <div class="paper" id="paper"></div>
-  </div>
+  </main>
 </div>
 <script>
 const $=s=>document.querySelector(s);
@@ -147,7 +241,8 @@ awards:{t:'Awards',h:'text',f:[['text','Award'],['dates','Date']]}};
 let V=null,tab='cv';
 try{V=JSON.parse(localStorage.getItem('cvb2'))}catch(e){}
 if(!V||!V.list||!V.list.length)V={cur:1,list:[{id:1,name:'Master CV',data:clone(DEF)}]};
-const save=()=>{try{localStorage.setItem('cvb2',JSON.stringify(V))}catch(e){}};
+function stamp(){const s=document.querySelector('#st');if(!s||!s.classList)return;s.classList.remove('flash');void s.offsetWidth;s.classList.add('flash');s.lastElementChild.textContent='Saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
+const save=()=>{try{localStorage.setItem('cvb2',JSON.stringify(V))}catch(e){}stamp()};
 const D=()=>(V.list.find(v=>v.id==V.cur)||V.list[0]).data;
 function set(p,v){const a=p.split('.');let o=D();while(a.length>1)o=o[a.shift()];o[a[0]]=v}
 
@@ -160,7 +255,7 @@ function ed(){
 <details><summary>Professional summary</summary>${inp('summary','Summary',d.summary,7)}</details>`;
   for(const k in LISTS){
     const cf=LISTS[k];
-    h+=`<details><summary>${cf.t}</summary><p class="hint">Tick an item to show it on the CV.</p>`;
+    h+=`<details><summary>${cf.t}<span class="n" data-n="${k}"></span></summary><p class="hint">Switch an item off to hide it from the CV.</p>`;
     d[k].forEach((o,i)=>{
       h+=`<div class="ih"><input type="checkbox" data-p="${k}.${i}.on" ${o.on?'checked':''} aria-label="Show on CV"><details><summary>${esc(o[cf.h]||'Untitled')}</summary>${cf.f.map(([f,l,r])=>inp(`${k}.${i}.${f}`,l,o[f],r)).join('')}<div class="row"><button data-a="up:${k}:${i}">Move up</button><button data-a="dn:${k}:${i}">Move down</button><button data-a="rm:${k}:${i}">Remove</button></div></details></div>`;
     });
@@ -174,9 +269,11 @@ function ed(){
 const on=a=>a.filter(x=>x.on);
 const sec=(t,h)=>h?`<h2>${t}</h2>${h}`:'';
 const ul=s=>L(s).length?`<ul>${L(s).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'';
-const href=u=>/^https?:\/\//i.test(u)?u:'https://'+u;
-const lk=u=>`<a href="${esc(href(u))}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\/(www\.)?/i,'').replace(/\/$/,''))}</a>`;
-const contact=d=>{const a=[d.email&&`<a href="mailto:${esc(d.email)}">${esc(d.email)}</a>`,esc(d.phone),esc(d.loc)].filter(Boolean).join(' | '),b=L(d.links).map(lk).join(' | ');return a+(a&&b?'<br>':'')+b};
+const clean=u=>String(u||'').replace(/[​-‍⁠﻿ ]/g,'').trim();
+const urlOf=u=>{u=clean(u);if(!u)return null;try{const x=new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(u)?u:'https://'+u);return /^https?:$/.test(x.protocol)&&x.hostname.includes('.')?x:null}catch(e){return null}};
+const lk=u=>{const x=urlOf(u);if(!x)return esc(clean(u));return `<a href="${esc(x.href)}" target="_blank" rel="noopener noreferrer">${esc((x.host.replace(/^www\./,'')+x.pathname+x.search).replace(/\/$/,''))}</a>`};
+const linkList=t=>String(t||'').split(/[\n,|]+|\s{2,}/).map(clean).filter(Boolean);
+const contact=d=>{const a=[d.email&&`<a href="mailto:${esc(d.email)}">${esc(d.email)}</a>`,esc(d.phone),esc(d.loc)].filter(Boolean).join(' | '),b=linkList(d.links).map(lk).join(' | ');return a+(a&&b?'<br>':'')+b};
 const mk=h=>h.replace(/\[[^\]]+\]/g,'<mark>$&</mark>');
 const wrap=h=>`<table class="pg"><thead><tr><td><div class="sp"></div></td></tr></thead><tbody><tr><td>${h}</td></tr></tbody><tfoot><tr><td><div class="sp"></div></td></tr></tfoot></table>`;
 function cv(d){
@@ -217,14 +314,15 @@ function kw(d){
   const other=Object.entries(cnt).filter(e=>e[1]>=2).sort((a,b)=>b[1]-a[1]).slice(0,20);
   const chip=(w,ok,n)=>`<span class="chip ${ok?'ok':'no'}">${esc(w)}${n?' x'+n:''}</span>`;
   const pct=terms.length?Math.round(hit.length/terms.length*100):0;
-  return `<h2>Keyword match</h2><p><span class="score">${pct}%</span> of ${terms.length} technical keywords in the job description appear in your CV.</p>
+  return `<h2>Keyword match</h2><p class="sc"><span class="score" style="--p:${pct}">${pct}%</span><span>of the ${terms.length} technical keywords in this job description appear in your CV.</span></p>
 <h2>Missing technical keywords</h2><p>${miss.map(w=>chip(w,0)).join('')||'None. Nice.'}</p>
 <h2>Already covered</h2><p>${hit.map(w=>chip(w,1)).join('')||'None yet.'}</p>
 <h2>Other repeated words in the posting</h2><p>${other.map(([w,n])=>chip(w,has(cvt,w),n)).join('')||'None.'}</p>
 <p class="hint">Only add a keyword to your CV if it is true for you. Tick or untick projects, reorder bullets and tweak the summary to mirror the posting's wording.</p>`;
 }
+function cnt(){const d=D();for(const k in LISTS){const el=document.querySelector('[data-n="'+k+'"]');if(el)el.textContent=on(d[k]).length+' of '+d[k].length+' shown'}}
 function pv(){
-  const d=D();
+  const d=D();cnt();
   $('#paper').className='paper'+(tab=='kw'?' kw':tab=='cl'?' cl':'');
   $('#paper').innerHTML=tab=='cv'?wrap(cv(d)):tab=='cl'?cl(d):kw(d);
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==tab));
@@ -283,6 +381,8 @@ $('#file').addEventListener('change',e=>{
     e.target.value='';
   });
 });
+document.addEventListener('click',e=>{document.querySelectorAll('.menu[open]').forEach(m=>{if(!m.contains(e.target)||e.target.closest('.pop button'))m.open=false})});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.menu[open]').forEach(m=>m.open=false)});
 vers();ed();pv();
 </script>
 </body>
