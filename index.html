@@ -248,7 +248,8 @@ function set(p,v){const a=p.split('.');let o=D();while(a.length>1)o=o[a.shift()]
 
 /* ---------- Editor ---------- */
 const inp=(p,l,v,r)=>`<label>${l}${r?`<textarea data-p="${p}" rows="${r}">${esc(v)}</textarea>`:`<input data-p="${p}" value="${esc(v)}">`}</label>`;
-function ed(){
+function snap(){const s={sec:[...document.querySelectorAll('#ed>details')].map(x=>x.open),it:{},top:$('#ed').scrollTop};document.querySelectorAll('#ed [data-k]').forEach(x=>{s.it[x.dataset.k]=x.open});return s}
+function ed(st){
   const d=D(),c=d.cl;
   let h=`<details open><summary>Job description and keywords</summary>${inp('jd','Paste the job description, then open the Keyword match tab',d.jd,7)}</details>
 <details><summary>Personal details</summary>${inp('name','Full name',d.name)}${inp('title','Headline',d.title)}${inp('email','Email',d.email)}${inp('phone','Phone',d.phone)}${inp('loc','Location',d.loc)}${inp('links','Links, one per line',d.links,3)}</details>
@@ -257,12 +258,17 @@ function ed(){
     const cf=LISTS[k];
     h+=`<details><summary>${cf.t}<span class="n" data-n="${k}"></span></summary><p class="hint">Switch an item off to hide it from the CV.</p>`;
     d[k].forEach((o,i)=>{
-      h+=`<div class="ih"><input type="checkbox" data-p="${k}.${i}.on" ${o.on?'checked':''} aria-label="Show on CV"><details><summary>${esc(o[cf.h]||'Untitled')}</summary>${cf.f.map(([f,l,r])=>inp(`${k}.${i}.${f}`,l,o[f],r)).join('')}<div class="row"><button data-a="up:${k}:${i}">Move up</button><button data-a="dn:${k}:${i}">Move down</button><button data-a="rm:${k}:${i}">Remove</button></div></details></div>`;
+      h+=`<div class="ih"><input type="checkbox" data-p="${k}.${i}.on" ${o.on?'checked':''} aria-label="Show on CV"><details data-k="${k}.${i}"><summary>${esc(o[cf.h]||'Untitled')}</summary>${cf.f.map(([f,l,r])=>inp(`${k}.${i}.${f}`,l,o[f],r)).join('')}<div class="row"><button data-a="up:${k}:${i}">Move up</button><button data-a="dn:${k}:${i}">Move down</button><button data-a="rm:${k}:${i}">Remove</button></div></details></div>`;
     });
     h+=`<button class="add" data-a="add:${k}:0">Add item</button></details>`;
   }
   h+=`<details><summary>Cover letter</summary>${inp('cl.company','Company',c.company)}${inp('cl.role','Job title',c.role)}${inp('cl.manager','Hiring manager (optional)',c.manager)}${inp('cl.reason','Why this company? Completes "I am drawn to the company because ..." e.g. its focus on scalable ERP products',c.reason,3)}${inp('cl.date','Date (blank = today)',c.date)}${inp('cl.body','Letter body. Blank line between paragraphs. Use {company}, {role}, {manager}, {reason}.',c.body,16)}${inp('cl.sign','Sign-off',c.sign)}</details>`;
   $('#ed').innerHTML=h;
+  if(st){
+    document.querySelectorAll('#ed>details').forEach((x,n)=>{if(n in st.sec)x.open=!!st.sec[n]});
+    document.querySelectorAll('#ed [data-k]').forEach(x=>{if(x.dataset.k in st.it)x.open=!!st.it[x.dataset.k]});
+    $('#ed').scrollTop=st.top;
+  }
 }
 
 /* ---------- Preview ---------- */
@@ -342,12 +348,19 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;pv();return}
   const a=e.target.closest('[data-a]');
   if(a){
-    const [act,k,n]=a.dataset.a.split(':'),i=+n,arr=D()[k];
-    if(act=='add')arr.push(clone(NEW[k]));
-    if(act=='rm'&&confirm('Remove this item?'))arr.splice(i,1);
-    if(act=='up'&&i>0)[arr[i-1],arr[i]]=[arr[i],arr[i-1]];
-    if(act=='dn'&&i<arr.length-1)[arr[i+1],arr[i]]=[arr[i],arr[i+1]];
-    save();ed();pv();return;
+    const [act,k,n]=a.dataset.a.split(':'),i=+n,arr=D()[k],st=snap(),key=j=>k+'.'+j,len=arr.length;
+    let focus=null;
+    if(act=='add'){arr.push(clone(NEW[k]));st.it[key(len)]=true;focus=`[data-k="${key(len)}"] input:not([type=checkbox])`}
+    if(act=='rm'&&confirm('Remove this item?')){
+      arr.splice(i,1);
+      for(let j=i;j<len-1;j++)st.it[key(j)]=st.it[key(j+1)];
+      delete st.it[key(len-1)];
+    }
+    if(act=='up'&&i>0){[arr[i-1],arr[i]]=[arr[i],arr[i-1]];[st.it[key(i-1)],st.it[key(i)]]=[st.it[key(i)],st.it[key(i-1)]];focus=`[data-a="up:${k}:${i-1}"]`}
+    if(act=='dn'&&i<len-1){[arr[i+1],arr[i]]=[arr[i],arr[i+1]];[st.it[key(i+1)],st.it[key(i)]]=[st.it[key(i)],st.it[key(i+1)]];focus=`[data-a="dn:${k}:${i+1}"]`}
+    save();ed(st);pv();
+    if(focus){const el=document.querySelector(focus);if(el)el.focus()}
+    return;
   }
   const g=e.target.closest('[data-g]');if(!g)return;
   const cur=V.list.find(v=>v.id==V.cur);
